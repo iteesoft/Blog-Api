@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
@@ -28,13 +26,13 @@ public class Post {
     private String title;
     private String content;
     private Instant createdDate;
+    private Instant updatedDate;
     private int likesQty;
 
     @JsonIgnore
-    @ManyToOne(fetch = LAZY)
-    private User user;
+    private BlogUser blogUser;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = LAZY, mappedBy = "post")
-    private List<Comment> comments;
+    private List<Comment> postComments;
 
 }

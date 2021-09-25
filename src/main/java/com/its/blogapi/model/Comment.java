@@ -1,5 +1,6 @@
 package com.its.blogapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,9 +23,9 @@ public class Comment {
     private Instant updatedTime;
     private int likesQty;
 
-    @ManyToOne(fetch = LAZY)
-    private User user;
+    @JsonIgnore
+    private BlogUser blogUser;
 
-    @ManyToOne(fetch = LAZY)
+    @JsonIgnore
     private Post post;
 }

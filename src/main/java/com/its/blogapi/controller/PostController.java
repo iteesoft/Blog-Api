@@ -21,13 +21,28 @@ import java.util.stream.Collectors;
 public class PostController {
 
     private PostService postService;
-    private UserService userService;
     private ModelMapper modelMapper;
 
+    @PostMapping("/new")
+    public ResponseEntity<?> createPost(@RequestBody PostDto postDto, LoginDto loginDto){
+        Post newPost = postService.createPost(loginDto, postDto);
+       return new ResponseEntity(newPost, HttpStatus.CREATED);
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<PostDto> updatePost(@PathVariable long id, @RequestBody PostDto postDto) {
+        Post postRequest = modelMapper.map(postDto, Post.class);
+        Post post = postService.updatePost(id, postRequest);
+        return new ResponseEntity(post, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<?> likePost(@PathVariable Long id, LoginDto loginDto) {
+        return ResponseEntity.ok(postService.likePost(id,loginDto.getEmail()));
+    }
 
     @GetMapping
-    public List<PostDto> getAllPosts() {
+    public List<PostDto> showAllPosts() {
         return postService.getAllPosts().stream().map(post -> modelMapper.map(post, PostDto.class))
                 .collect(Collectors.toList());
     }
@@ -39,29 +54,9 @@ public class PostController {
         return ResponseEntity.ok().body(postResponse);
     }
 
-    @PostMapping("/addPost")
-    public ResponseEntity<Post> addPost(@RequestBody PostDto postDto, LoginDto loginDto){
-        Post newPost = postService.savePost(loginDto, postDto.getContent(), postDto.getTitle());
-       return new ResponseEntity(newPost, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/updatePost/{id}")
-    public ResponseEntity<PostDto> updatePost(@PathVariable long id, @RequestBody PostDto postDto) {
-        Post postRequest = modelMapper.map(postDto, Post.class);
-        Post post = postService.updatePost(id, postRequest);
-        return new ResponseEntity(post, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/deletePost/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable(name = "id") Long id) {
         postService.deletePost(id);
         return new ResponseEntity<>("Post Deleted Successfully", HttpStatus.OK);
     }
-
-    @PostMapping("/likePost/{id}/{user_id}")
-    public ResponseEntity<?> likePost(@PathVariable Long id, @PathVariable Long user_id) {
-        return postService.likePost(id,user_id);
-    }
-
-
 }
